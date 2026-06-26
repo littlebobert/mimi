@@ -298,15 +298,29 @@ TOKEN_ENDPOINT=https://… # extension + web app fetch ephemeral tokens from her
 
 ---
 
-## 60-second pitch script
+## Demo pitch script (~2 min)
 
-> **Problem:** Tools like Migaku let you mine words from subtitles — but livestreams, radio, and most of the internet have no captions. Nothing to click.
->
-> **Solution:** Mimi is a Chrome extension that listens to live audio, translates in real time with Gemini's speech-to-speech API, and paints Japanese + English subtitles on the video. Tap any word — instant definition. No subtitle file required.
->
-> **Demo:** *[Open livestream → click Mimi → subtitles appear on video → tap a word → popup]*
->
-> **Also deployed** as a web app on Cloud Run. **Next:** macOS app for Zoom calls, study agent that builds your deck from a session.
+Quick show of hands — has anyone used Migaku, or made flashcards from stuff you actually watch?
+
+*[pause]*
+
+It's simple: you learn faster when vocabulary comes from your life: the show you're watching for example — not a textbook.
+
+The problem: those tools need subtitles on a supported site. A World Cup livestream with no captions? Nothing to click. Your Zoom lesson with your tutor? Migaku doesn't support that.
+
+This app, called Mimi, Japanese for ear, listens to live audio instead. It's a Chrome extension. Open any tab with Japanese audio, click Mimi, and Gemini translates in real time. Japanese and English subtitles appear right on the video.
+
+*[demo: rehearsed browser call with teammate; backup rehearsed YouTube video if that fails]*
+
+And this is what subtitle tools can't do on live audio — tap any word. Instant definition. *[click, popup]*
+
+Migaku for live audio — streams, calls, even live conversations on a future mobile app. Anything Migaku can't reach. Web app on Cloud Run too — link in the submission.
+
+### Stage notes
+
+- Have the **backup YouTube tab already open** — switch without apologizing if the call hiccups
+- Rehearse the browser call twice before demos; teammate pre-positioned and scripted
+- End on the **click → popup** moment; that's the screenshot
 
 ---
 
