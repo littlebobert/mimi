@@ -1,8 +1,13 @@
+import { Platform } from 'react-native';
+
 const apiKey = process.env.EXPO_PUBLIC_GEMINI_API_KEY?.trim() ?? '';
 const liveModel =
   process.env.EXPO_PUBLIC_GEMINI_LIVE_MODEL?.trim() ??
   'gemini-3.5-live-translate-preview';
-const apiBaseUrl = process.env.EXPO_PUBLIC_MIMI_API_BASE_URL?.trim().replace(/\/$/, '') ?? '';
+const defaultApiBaseUrl = 'https://mimi-161955734014.asia-northeast1.run.app';
+const apiBaseUrl =
+  process.env.EXPO_PUBLIC_MIMI_API_BASE_URL?.trim().replace(/\/$/, '') ??
+  (Platform.OS === 'web' ? '' : defaultApiBaseUrl);
 
 let runtimeConfigPromise: Promise<{ apiKey: string; liveModel: string }> | null = null;
 
@@ -32,6 +37,9 @@ export async function requireApiKey(): Promise<string> {
 
 export function apiUrl(path: string): string {
   if (config.apiBaseUrl) {
+    if (!/^https?:\/\//.test(config.apiBaseUrl)) {
+      throw new Error(`Invalid EXPO_PUBLIC_MIMI_API_BASE_URL: ${config.apiBaseUrl}`);
+    }
     return `${config.apiBaseUrl}${path}`;
   }
   if (typeof window !== 'undefined') {

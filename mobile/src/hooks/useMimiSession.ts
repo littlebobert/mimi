@@ -234,8 +234,9 @@ export function useMimiSession({ targetLanguageCode, copy }: MimiSessionOptions)
 
     setAnalyzing(true);
     setAnalysisStatus(copy.analyzing);
+    const analysisUrl = apiUrl('/api/analyze-session');
     try {
-      const response = await fetch(apiUrl('/api/analyze-session'), {
+      const response = await fetch(analysisUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -252,7 +253,12 @@ export function useMimiSession({ targetLanguageCode, copy }: MimiSessionOptions)
       setAnalysis(normalizeAnalysis(data));
       setAnalysisStatus(copy.analysisReady);
     } catch (error) {
-      setAnalysisStatus(error instanceof Error ? error.message : copy.analysisFailed);
+      const message = error instanceof Error ? error.message : copy.analysisFailed;
+      setAnalysisStatus(
+        message === 'Network request failed'
+          ? `Cannot reach Mimi backend: ${analysisUrl}`
+          : message,
+      );
     } finally {
       setAnalyzing(false);
     }
