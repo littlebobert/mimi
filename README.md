@@ -1,8 +1,10 @@
 # Mimi (耳)
 
-**Learn Japanese from live audio — no subtitles needed.**
+**Learn Japanese from real conversations — live.**
 
-> Live translation helps you understand — but it doesn't help you **learn**. Mimi is live translation that turns what you hear into flashcards from your own life — the Netflix show you're watching, a call with your tutor, a live event, anything. Tap any word to study it later.
+> Live translation helps you understand — but it doesn't help you **learn**. **Mimi** is a mobile app that turns real Japanese conversations into flashcards — a tutor call, friends at dinner, a live event. Tap any word to study it later.
+
+*Prototype today: Chrome extension + web app on Cloud Run. Same pipeline, native mobile next.*
 
 Gemini AI Hackathon · Tokyo · Jun 28, 2026 · [AI Builders × Google Japan](https://aibuilders.jp)
 
@@ -12,24 +14,33 @@ Gemini AI Hackathon · Tokyo · Jun 28, 2026 · [AI Builders × Google Japan](ht
 
 **Live translation tools are great — but they're not learning tools.**
 
-Google Translate, Meet captions, live subtitle overlays — you hear the English, but nothing sticks. Vocabulary from *your* life (the show you're watching, a conversation you had) beats any textbook — but only if you can capture and study it.
+Google Translate, Meet captions — you hear the English, but nothing sticks. Import and subtitle tools work when you've **prepared** content. Real life doesn't wait.
 
-**Mimi listens.** We stream tab audio into Gemini's live speech-to-speech translation API, show Japanese + English **painted on top of the video**, and let you tap any word for an instant definition. Flashcards from live audio — no subtitle file required.
+**Real conversations happen on your phone** — a call with your tutor, friends at dinner, a live event. No transcript, no import step, nothing to study later.
 
-That's the demo. That's the pitch.
+**Mimi listens.** Gemini live speech-to-speech translation, bilingual subtitles, tap any word for an instant definition. Flashcards from your actual life — not a textbook.
+
+**We're for the gaps:** live audio and real interactions where prepared study tools can't reach. Keep your usual apps for Netflix with subs — Mimi is for everything else.
+
+That's the product. Today's prototype proves the pipeline works.
 
 ---
 
-## Demo strategy: extension first, web app as fallback
+## Demo strategy: mobile vision, extension prototype today
 
 | Surface | Role |
 |---------|------|
-| **Chrome extension** | **Primary demo** — live clickable subtitles overlaid on any video page (YouTube livestream, etc.) |
-| **Web app (Cloud Run)** | **Submission requirement** + **fallback demo** if extension injection or MV3 plumbing fails on stage |
+| **Mobile app** *(vision)* | **The product** — mic for real conversations, tutor calls, live events on the device you're already holding |
+| **Chrome extension** | **Primary demo today** — proves pipeline: live subs overlaid on video, tap-to-define |
+| **Web app / PWA (Cloud Run)** | **Submission URL** + fallback demo + optional **phone mic mode** for "real convo" feel |
 
-Judges need a **deployed URL** (Cloud Run). They don't need the extension to be your submission — but the extension is what makes the room go "oh." Plan both; demo the extension; submit the web app link.
+Judges need a **deployed Cloud Run URL**. Demo the **extension** (or phone PWA with mic) on stage. Pitch the **mobile app** as where it's going.
 
-If we're choosing at 3 PM: a working extension overlay beats a prettier web panel. A working web app beats a broken extension with nothing to submit.
+If we're choosing at 3 PM: working tap-to-define beats platform. Working extension beats broken mobile shell.
+
+### Why not build native mobile today?
+
+~5 hours, Cloud Run deploy requirement, and the shared pipeline (`/api/token` → Gemini Live → segments → kuromoji → JMdict) is identical across platforms — only the **audio capture layer** changes. Ship the pipeline on extension/web; native mobile is the same backend.
 
 ---
 
@@ -56,17 +67,17 @@ Hacking runs **11:30 AM → 4:30 PM** (lunch ~12:30). Plan for **~4–5 hours of
 
 ### Explicitly NOT today
 
-- macOS / system-audio capture (Zoom, FaceTime)
-- Auth, accounts, Anki export, streaks
+- Native iOS / Android app (same pipeline, new capture layer — roadmap)
+- Auth, accounts, Anki export, LingQ connect, streaks
 - Extension published to Chrome Web Store (load unpacked for demo)
-- Site-specific integrations beyond generic video overlay injection
 
 ### Demo fallback ladder
 
-1. **Best:** Extension on a live Japanese stream → overlay → tap word
-2. **Good:** Extension on a **downloaded local video file** opened in Chrome (no WiFi dependency for the page)
-3. **OK:** Web app with tab share + side panel (same pipeline, less magic)
-4. **Last resort:** Web app + **local audio clip** piped through the pipeline
+1. **Best:** Extension on browser call or livestream → overlay → tap word
+2. **Good:** **Phone PWA** — open Cloud Run URL on mobile, mic mode, teammate speaks Japanese across the table *(strong "real convo" story)*
+3. **OK:** Extension on local video file in Chrome
+4. **OK:** Web app with tab share + side panel
+5. **Last resort:** Web app + local audio clip
 
 Download a no-subtitles Japanese clip **before** hacking starts. Test every rung of this ladder before demos.
 
@@ -148,6 +159,20 @@ Cloud Run mints short-lived Gemini tokens (`client.auth_tokens.create()`). Audio
 
 **Definitions:** local `jmdict-simplified` JSON — instant, offline. Gemini for contextual explanation only (stretch).
 
+### Platform roadmap (same pipeline, different mic)
+
+| Platform | Audio capture | Status |
+|----------|---------------|--------|
+| **Chrome extension** | `tabCapture` → offscreen doc | **Build today** |
+| **Web / PWA** | `getDisplayMedia()` or **`getUserMedia()` mic** | **Build today** — mic mode = phone convo demo |
+| **Native mobile** | Device mic (+ system audio later) | **Roadmap** — the product |
+
+```
+shared/ pipeline (token → Gemini Live → segments → kuromoji → JMdict)
+       ↑              ↑                    ↑
+   extension      web/PWA              mobile app (next)
+```
+
 ---
 
 ## Team contract (hour 1)
@@ -220,8 +245,8 @@ Protect the last 30–60 minutes for pitch rehearsal, not new features.
 |-----------|------------|
 | **Google Cloud integration** | Gemini Live API + Cloud Run token service + deployed web app |
 | **Innovation / multimodal** | Live speech-to-speech on raw audio — overlay on video, no subtitle track |
-| **Completeness** | Extension: live capture → overlay subs → tap word → definition. Web app ready as backup. |
-| **Deployed project** | Cloud Run URL submitted (web app); demo the extension live |
+| **Completeness** | Prototype: live capture → subs → tap word → definition. Mobile vision articulated. |
+| **Deployed project** | Cloud Run URL submitted; demo extension or phone PWA live |
 | **Managed Agents bonus** | Post-session study agent only if we ship it; don't fake it |
 
 ---
@@ -296,7 +321,97 @@ TOKEN_ENDPOINT=https://… # extension + web app fetch ephemeral tokens from her
 - [Gemini Live API — ephemeral tokens](https://ai.google.dev/gemini-api/docs/live)
 - [chrome.tabCapture](https://developer.chrome.com/docs/extensions/reference/api/tabCapture)
 - [Offscreen documents (MV3)](https://developer.chrome.com/docs/extensions/reference/api/offscreen)
+- [Deploy to Cloud Run from source](https://cloud.google.com/run/docs/deploying-source-code)
 - Language-learning subtitle overlays — UX reference for overlay placement
+
+---
+
+## Cloud Run deployment
+
+**Cloud Run = your hosted URL + small backend.** The hackathon requires a deployed link; judges click it to see the web app. This repo now serves the Expo web export from Cloud Run and exposes a tiny API for health/config.
+
+**Audio never goes through Cloud Run.** Static web files and runtime config live there. The browser opens a WebSocket to Gemini directly.
+
+### What runs where
+
+```
+Browser ──→ Cloud Run
+           ├── GET /           Expo web app
+           ├── GET /api/health backend smoke check
+           └── GET /api/config runtime Gemini config
+
+Browser ──→ WebSocket → Gemini Live API
+           (mic audio stays in the browser)
+```
+
+| Component | Where |
+|-----------|-------|
+| Web app UI | Browser, served from Cloud Run |
+| `GEMINI_API_KEY` | Cloud Run env var |
+| Live audio → Gemini | Browser ↔ Gemini directly |
+
+### What the server does
+
+One dependency-free Node app in `server/server.js` on port `$PORT` (Cloud Run sets this, usually 8080):
+
+- `GET /` serves `mobile/dist-web/index.html`.
+- `GET /api/health` returns `{ ok: true, service: "mimi" }`.
+- `GET /api/config` returns the runtime Gemini model and key for the current browser-based Gemini Live shortcut.
+
+Production should replace `/api/config` with short-lived Gemini ephemeral tokens. For the hackathon demo, this keeps the Cloud Run path simple and gets judges a working URL quickly.
+
+### Prerequisites (one-time)
+
+```bash
+# Install gcloud CLI: https://cloud.google.com/sdk/docs/install
+# On macOS with Homebrew:
+# brew install --cask google-cloud-sdk
+gcloud auth login
+gcloud config set project YOUR_PROJECT_ID
+
+# Enable APIs (hackathon workshop may do this for you)
+gcloud services enable run.googleapis.com cloudbuild.googleapis.com
+```
+
+Use region **`asia-northeast1`** (Tokyo) for lower latency.
+
+### Deploy — first time (hour 1 goal)
+
+From repo root:
+
+```bash
+export GEMINI_API_KEY=your-key-here
+npm run deploy:cloud-run
+```
+
+Google builds the Dockerfile, deploys it, and prints a URL like `https://mimi-xxxxx.asia-northeast1.run.app`. **Save this URL** — it's your submission link.
+
+First deploy takes ~5–10 minutes. Redeploys are faster.
+
+### Local smoke test
+
+```bash
+npm run build:web
+GEMINI_API_KEY=your-key-here npm run serve:web
+open http://localhost:8080/api/health
+```
+
+### Hackathon deploy checklist
+
+| When | Task |
+|------|------|
+| **Hour 1** | Deploy stub server — `GET /` returns "Mimi" and `POST /api/token` returns `{ ok: true }`. Submit URL immediately. |
+| **Hour 2–4** | Wire real ephemeral token minting |
+| **Hour 5** | Redeploy with `web/dist` static files + working `/api/token` |
+| **Before demo** | Confirm URL loads over HTTPS; extension `TOKEN_URL` matches |
+
+### Gotchas
+
+- **Listen on `$PORT`** — not hardcoded 3000; Cloud Run injects the port
+- **CORS on `/api/token`** — extension origin differs from Cloud Run; allow `POST` + preflight `OPTIONS`
+- **Cold starts** — first request after idle may take 1–2 sec; fine for token mint, not for audio (which is why audio bypasses Cloud Run)
+- **Extension ≠ submission** — judges get the Cloud Run URL; you demo the extension on your laptop
+- **Secrets** — for a hackathon, `--set-env-vars GEMINI_API_KEY=...` is fine; don't commit the key to git
 
 ---
 
@@ -305,93 +420,140 @@ TOKEN_ENDPOINT=https://… # extension + web app fetch ephemeral tokens from her
 **Opener:** Quick question — have you ever made your own flashcards to learn a language?
 
 **If YES:**
-> Same thing — but from **any live audio** — the Netflix show you're watching, a call with your tutor, a live event, anything. Tap a word, get the definition, save it. Gemini hackathon today. Need a **designer** and a **native JP speaker** — interested?
+> Same thing — but from **real conversations** on your phone — a tutor call, friends at dinner, a live event. Tap a word, save it. Building the prototype at the Gemini hackathon today. Need a **designer** and a **native JP speaker** — interested?
 
 **If NO:**
-> The idea's simple: people learn better when vocabulary comes from **their own life** — the Netflix show you're watching, a call with your tutor, a live event, anything. We're building flashcards from live audio. Chrome extension, hackathon today. Need a **designer** and someone who can **catch bad Japanese**. Team up?
+> People learn better when vocabulary comes from **their life** — conversations, not textbooks. We're building a **mobile app** for that; prototyping it today. Need a **designer** and someone who can **catch bad Japanese**. Team up?
 
 ---
 
 ## Slide deck (6 slides)
 
+**Open in browser:** [`pitch/slides.html`](pitch/slides.html) — arrow keys or tap to advance, generative fxhash-*inspired* backgrounds.
+
 **Slide 1 — Title**
-- Mimi (耳) — Learn Japanese from live audio
-- Chrome extension: live translation + clickable subtitles
-- Tap any word → instant definition
+- Mimi (耳) · Learn Japanese from real conversations
+- Mobile app · live translation · tap any word
 
 **Slide 1.5 — Thesis**
 - The best vocabulary is personal
-- Save words from shows, streams, and conversations you care about
-- Learn faster when every card comes from something you watched or lived
+- Flashcards from *your* calls, conversations, and live moments
+- Not a textbook — your life
 
 **Slide 2 — Problem**
-- Live translation tools aren't learning tools
-- You understand in the moment — but nothing sticks
-- Netflix show you're watching, a call with your tutor, a live event — no way to capture and study what you hear
+- Live translation ≠ learning — nothing sticks
+- Import/subtitle tools need text you've prepared ahead of time
+- Real convos on your phone? Hear it once, can't study it
 
 **Slide 3 — Solution**
-- Mimi listens to live audio → bilingual subtitles on the video
-- Tap any word for an instant definition
-- Flashcards from your own life, not a textbook
+- Mimi listens → bilingual subtitles in real time
+- Tap any word → instant definition → save for later
+- For the gaps — live audio, real interactions, no import step
 
 **Slide 4 — Demo**
-- Browser call with teammate *(backup: YouTube livestream)*
-- Subtitles appear in real time
-- Click a word → definition popup
+- Browser call or **phone mic** with teammate speaking Japanese
+- Subtitles in real time → tap a word → popup
 
 **Slide 5 — Roadmap**
-- **Today:** Chrome extension + web app on Cloud Run
-- **Next:** macOS / mobile app for any audio around you
-- **Later:** Study agent auto-builds a deck matched to your level
+- **Today:** Expo app + Gemini Live pipeline
+- **Next:** Anki export · optional LingQ level connect
+- **Later:** Study agent builds a deck matched to your level
+
+---
 
 ## Demo pitch script (~2 min)
+
+**[Slide 1]**
 
 Quick show of hands — has anyone made flashcards from stuff they actually watch or listen to?
 
 *[pause]*
 
-It's simple: you learn faster when vocabulary comes from your life — the show you're watching, not a textbook.
+The idea is simple: you remember words tied to **your** life — a conversation you had, not a textbook list.
 
-The problem: live translation tools help you understand, but they're not **learning** tools. The Netflix show you're watching, a call with your tutor, a live event — you hear it once and forget it. Nothing to study later.
+**[Slide 1.5]**
 
-This app, called Mimi — Japanese for ear — listens to live audio instead. It's a Chrome extension. Open any tab with Japanese audio, click Mimi, and Gemini translates in real time. Japanese and English subtitles appear right on the video.
+**[Slide 2 — Problem]**
 
-*[demo: rehearsed browser call with teammate; backup rehearsed YouTube video if that fails]*
+Two problems.
 
-And this is what translation alone can't do — **tap any word**. Instant definition. *[click, popup]* Save it for your deck.
+First — live translation helps you **understand**, but nothing **sticks**.
 
-Live translation that actually helps you learn. Web app on Cloud Run too — link in the submission.
+Second — the tools that help you **learn** need text you've **prepared** — subtitles, an imported lesson. That works for study time.
+
+But a **call with your tutor**, **friends at dinner**, a **live event** — that happens on your **phone**, with no transcript. Translation alone doesn't turn that into flashcards.
+
+**[Slide 3 — Solution]**
+
+**Mimi** — Japanese for *ear* — fills that gap.
+
+It's a **mobile app** for real conversations. Gemini's live speech-to-speech API translates in real time. Japanese and English on screen. **Tap any word** — instant definition. Save it for later.
+
+We're not replacing your study apps for prepared content. We're for **everything else**.
+
+**[Slide 4 — Demo]**
+
+We prototyped the core pipeline in a Chrome extension today — same backend on Cloud Run.
+
+*[demo: browser call with teammate, OR phone PWA mic mode — backup tab ready]*
+
+*[click → popup]* This is what translation alone can't do.
+
+**[Slide 5 — Roadmap]**
+
+Native mobile next. Anki export. Optional LingQ connect for your level. A study agent that turns your session into a personalized deck.
+
+Live translation that actually helps you learn. Cloud Run link in the submission.
 
 ### Stage notes
 
-- Have the **backup YouTube tab already open** — switch without apologizing if the call hiccups
-- Rehearse the browser call twice before demos; teammate pre-positioned and scripted
-- End on the **click → popup** moment; that's the screenshot
+- Lead with **mobile vision**, demo the **prototype** — don't apologize for extension, frame it
+- **Phone PWA mic demo** is a strong backup and reinforces "real convo" story
+- Have backup YouTube tab open on laptop if call hiccups
+- End on **click → popup**
+
+### Q&A one-liners
+
+**"Why not just use import/subtitle tools?"**  
+> "Keep them for prepared content. We're for live audio with no text track — especially on your phone."
+
+**"Why demo an extension if it's a mobile app?"**  
+> "Same pipeline — token, Gemini Live, tap-to-define. Five hours; native mobile is next."
+
+**"Anime Japanese isn't daily Japanese."**  
+> "Agreed — that's why we demo a conversation, not anime. You tap what *you* want."
+
+**"Isn't live translate worse than Whisper?"**  
+> "For a podcast you'd import tomorrow, maybe. We're on a conversation happening *right now* — and you tap the Japanese, not the English."
 
 ---
 
 ## Roadmap (beyond today)
 
-1. **macOS app** — ScreenCaptureKit for system audio (city hall Zoom, landlord calls)
-2. **Study agent** — post-session: group words, generate examples, build review deck
-3. **Anki export** — one-click deck sync
-4. **Chrome Web Store** publish + site whitelist tuning
+1. **Native mobile app** — mic for in-person + calls; the real product surface
+2. **Anki export** — cards go where learners already review
+3. **LingQ connect** — optional API key → `knownWords` count → level-aware suggestions
+4. **Study agent** — post-session: filter by level, group words, generate examples
+5. **Chrome Web Store** — extension as desktop companion for video tabs
 
 ---
 
 ## FAQ
 
-**Extension vs web app — which do we submit?**
-Submit the **Cloud Run web app URL**. Demo the **extension** on stage. They're the same backend and shared pipeline.
+**Mobile app vs extension — what do we submit?**
+Submit the **Cloud Run web app URL**. Pitch the **mobile app** as the product. Demo the **extension or phone PWA** as today's prototype.
+
+**Why prototype on extension if it's a mobile app?**
+Same pipeline everywhere — only audio capture differs. Extension is fastest to ship in ~5 hours; native mobile uses the same Cloud Run backend.
 
 **What if overlay injection breaks on the demo site?**
-Fall back to web app tab-share, or a different site we tested (YouTube is the default target). Have the fallback ladder rehearsed.
+Fall back to phone PWA mic mode, web app tab-share, or a different tested site. Have the fallback ladder rehearsed.
 
 **Isn't this just live captions?**
-No — captions and translation help you understand. Mimi turns every word into something you can tap, define, and save for later.
+No — captions help you understand. Mimi turns every word into something you can tap, define, and save for later.
 
 **Why "Mimi" (耳)?**
-Ear — 耳から覚える ("learn by ear"). Short, memorable.
+Ear — 耳から覚える ("learn by ear"). Short, memorable. You're listening to real life.
 
 ---
 
@@ -403,4 +565,4 @@ DM **[your handle]** or find us at team formation after the workshop.
 
 ---
 
-*Last updated: Jun 26, 2026 — extension-primary, web-app-fallback strategy. No third-party product comparisons.*
+*Last updated: Jun 26, 2026 — mobile-first vision, extension/PWA prototype for hackathon.*

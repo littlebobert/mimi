@@ -1,0 +1,11 @@
+.git
+.DS_Store
+node_modules
+mobile/node_modules
+mobile/ios
+mobile/android
+mobile/.expo
+mobile/dist-web
+mobile/.env
+npm-debug.log
+**/*.tsbuildinfo

@@ -1,0 +1,49 @@
+{
+  "expo": {
+    "name": "Mimi",
+    "slug": "mimi",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#090909"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.mimi.learn",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Mimi listens to Japanese audio for live translation and learning."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#090909"
+      },
+      "package": "com.mimi.learn",
+      "permissions": [
+        "RECORD_AUDIO"
+      ],
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-dev-client",
+      "expo-audio",
+      [
+        "@mykin-ai/expo-audio-stream",
+        {
+          "microphonePermission": "Mimi listens to Japanese audio for live translation and learning."
+        }
+      ],
+      "expo-asset"
+    ]
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "mimi",
+  "private": true,
+  "scripts": {
+    "start": "npm start --prefix mobile",
+    "start:tunnel": "npm run start:tunnel --prefix mobile",
+    "ios:device:install": "npm run ios:device:install --prefix mobile",
+    "patch:ios-scene": "npm run patch:ios-scene --prefix mobile",
+    "web": "npm run web --prefix mobile",
+    "build:web": "npm run build:web --prefix mobile",
+    "serve:web": "node server/server.js",
+    "deploy:cloud-run": "gcloud run deploy mimi --source . --region asia-northeast1 --allow-unauthenticated --set-env-vars GEMINI_API_KEY=$GEMINI_API_KEY,GEMINI_LIVE_MODEL=gemini-3.5-live-translate-preview,GEMINI_ANALYSIS_MODEL=${GEMINI_ANALYSIS_MODEL:-gemini-3.5-flash}",
+    "deploy:cloud-run:env": "bash scripts/deploy-cloud-run-from-env.sh",
+    "ios:device": "npm run ios:device --prefix mobile",
+    "android:device": "npm run android:device --prefix mobile",
+    "ios": "npm run ios --prefix mobile",
+    "android": "npm run android --prefix mobile"
+  }
+}

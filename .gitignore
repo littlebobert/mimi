@@ -1,0 +1,13 @@
+.DS_Store
+node_modules/
+dist/
+
+mobile/node_modules/
+mobile/.expo/
+mobile/dist-web/
+mobile/.env
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.tsbuildinfo

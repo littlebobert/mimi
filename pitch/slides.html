@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mimi - Pitch Deck</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,800;1,9..40,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; background: #0a0a0a; color: #f5f2eb; font-family: "DM Sans", system-ui, sans-serif; }
+
+    .deck { height: 100vh; width: 100vw; position: relative; }
+
+    .slide {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column; justify-content: center;
+      padding: clamp(2rem, 6vw, 5rem);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+    .slide.active { opacity: 1; pointer-events: auto; }
+
+    canvas.bg {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      z-index: 0;
+    }
+    .slide::after {
+      content: "";
+      position: absolute; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        linear-gradient(105deg, rgba(10,10,10,0.97) 0%, rgba(10,10,10,0.88) 42%, rgba(10,10,10,0.35) 72%, rgba(10,10,10,0.15) 100%);
+    }
+    .content { position: relative; z-index: 1; max-width: 48rem; }
+
+    .kicker {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.75rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: rgba(245, 242, 235, 0.55); margin-bottom: 1rem;
+    }
+    h1 {
+      font-size: clamp(2.4rem, 7vw, 4.5rem);
+      font-weight: 800; line-height: 1.05; letter-spacing: -0.03em;
+      margin-bottom: 0.75rem;
+    }
+    h2 {
+      font-size: clamp(1.6rem, 4vw, 2.5rem);
+      font-weight: 800; line-height: 1.15; letter-spacing: -0.02em;
+      margin-bottom: 1.25rem;
+    }
+    .subtitle {
+      font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+      color: rgba(245, 242, 235, 0.78); line-height: 1.5;
+      max-width: 34rem;
+    }
+    .jp { font-weight: 600; opacity: 0.9; }
+
+    ul.bullets {
+      list-style: none; margin-top: 0.5rem;
+      display: flex; flex-direction: column; gap: 0.9rem;
+    }
+    ul.bullets li {
+      font-size: clamp(1.05rem, 2.2vw, 1.3rem);
+      line-height: 1.45;
+      padding-left: 1.4rem; position: relative;
+      color: rgba(245, 242, 235, 0.92);
+    }
+    ul.bullets li::before {
+      content: ""; position: absolute; left: 0; top: 0.55em;
+      width: 0.45rem; height: 0.45rem; border-radius: 50%;
+      background: var(--accent, #f5f2eb);
+    }
+    ul.bullets li strong { font-weight: 700; color: #fff; }
+
+    .pill-row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.5rem; }
+    .pill {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.7rem; letter-spacing: 0.06em;
+      padding: 0.35rem 0.75rem; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.22);
+      background: rgba(0,0,0,0.3); backdrop-filter: blur(8px);
+    }
+
+    .demo-mock {
+      margin-top: 1.25rem; padding: 1rem 1.25rem;
+      border-radius: 12px; border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(0,0,0,0.4); backdrop-filter: blur(12px);
+      max-width: 28rem;
+    }
+    .demo-mock .jp-line { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.35rem; }
+    .demo-mock .jp-line span {
+      border-bottom: 2px solid var(--accent, #f5f2eb); cursor: default;
+    }
+    .demo-mock .en-line { font-size: 0.95rem; color: rgba(245,242,235,0.65); }
+
+    .title-content { max-width: 34rem; }
+    .title-mockup {
+      position: absolute;
+      right: clamp(5rem, 14vw, 13rem);
+      top: 50%;
+      transform: translateY(-50%) rotate(1.5deg);
+      z-index: 1;
+      width: clamp(13.5rem, 23vw, 17rem);
+      border-radius: 2rem;
+      padding: 0.65rem;
+      background: rgba(245, 242, 235, 0.08);
+      border: 1px solid rgba(245, 242, 235, 0.18);
+      box-shadow: 0 2rem 5rem rgba(0,0,0,0.45);
+      backdrop-filter: blur(10px);
+    }
+    .phone-screen {
+      overflow: hidden;
+      min-height: clamp(24rem, 58vh, 32rem);
+      border-radius: 1.45rem;
+      background: #f7f4ef;
+      color: #111;
+      font-size: 0.72rem;
+    }
+    .phone-top {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.7rem 0.95rem 0.35rem;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.62rem;
+      color: #222;
+    }
+    .phone-header {
+      padding: 0.65rem 1rem 0.85rem;
+      background: #fff;
+      border-bottom: 1px solid #e7e0d7;
+    }
+    .phone-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+    .phone-title { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.04em; }
+    .phone-tagline { margin-top: 0.15rem; color: #6c665d; font-size: 0.62rem; }
+    .phone-mode {
+      border-radius: 999px;
+      border: 1px solid #d9d0c4;
+      padding: 0.28rem 0.5rem;
+      font-weight: 800;
+      font-size: 0.55rem;
+      background: #f7f4ef;
+    }
+    .phone-body { padding: 1rem; }
+    .phone-status {
+      display: flex;
+      gap: 0.45rem;
+      padding: 0.75rem;
+      border-radius: 0.9rem;
+      background: #fff;
+      border: 1px solid #e6e0d6;
+      color: #5a544c;
+      line-height: 1.3;
+    }
+    .phone-dot {
+      flex: 0 0 auto;
+      width: 0.42rem;
+      height: 0.42rem;
+      margin-top: 0.18rem;
+      border-radius: 999px;
+      background: #2fb36d;
+    }
+    .phone-card {
+      margin-top: 0.85rem;
+      min-height: 8.8rem;
+      padding: 0.95rem;
+      border-radius: 1rem;
+      background: #fff;
+      border: 1px solid #e6e0d6;
+    }
+    .phone-jp { font-size: 1rem; font-weight: 800; line-height: 1.35; }
+    .phone-jp span { border-bottom: 2px solid #111; }
+    .phone-en { margin-top: 0.35rem; color: #6c665d; line-height: 1.35; }
+    .phone-flashcard {
+      margin-top: 0.75rem;
+      padding: 0.55rem 0.65rem;
+      border-radius: 0.75rem;
+      background: #111;
+      color: #fff;
+      font-size: 0.58rem;
+      line-height: 1.35;
+    }
+    .phone-button {
+      margin: 1rem;
+      margin-top: 0.25rem;
+      padding: 0.85rem;
+      border-radius: 0.9rem;
+      background: #111;
+      color: #fff;
+      text-align: center;
+      font-weight: 800;
+    }
+
+    @media (max-width: 840px) {
+      .title-mockup { display: none; }
+      .title-content { max-width: 48rem; }
+    }
+
+    .stakes-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(14rem, 24rem);
+      align-items: center;
+      gap: clamp(2rem, 6vw, 5rem);
+      max-width: 72rem;
+    }
+    .stakes-image {
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      border-radius: 1.3rem;
+      object-fit: cover;
+      filter: grayscale(1) contrast(1.22) brightness(0.72);
+      border: 1px solid rgba(245, 242, 235, 0.18);
+      box-shadow: 0 2rem 5rem rgba(0,0,0,0.45);
+      opacity: 0.86;
+    }
+    .stakes-note {
+      margin-top: 1.25rem;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.06em;
+      color: rgba(245,242,235,0.55);
+    }
+    @media (max-width: 840px) {
+      .stakes-layout { grid-template-columns: 1fr; }
+      .stakes-image { display: none; }
+    }
+
+    @media print {
+      @page { size: 16in 9in; margin: 0; }
+      html, body { width: 16in; height: auto; overflow: visible; background: #0a0a0a; }
+      .deck { width: 16in; height: auto; }
+      .slide {
+        position: relative;
+        width: 16in;
+        height: 9in;
+        opacity: 1;
+        pointer-events: auto;
+        page-break-after: always;
+        break-after: page;
+      }
+      .slide:last-child { page-break-after: auto; break-after: auto; }
+      canvas.bg { width: 16in; height: 9in; }
+      .title-mockup { display: block; }
+      .stakes-layout { grid-template-columns: minmax(0, 1fr) minmax(14rem, 24rem); }
+      .stakes-image { display: block; }
+      .nav-hint, .progress { display: none; }
+    }
+
+    .nav-hint {
+      position: fixed; bottom: 1.25rem; right: 1.5rem; z-index: 10;
+      font-family: "IBM Plex Mono", monospace; font-size: 0.65rem;
+      letter-spacing: 0.12em; color: rgba(255,255,255,0.35);
+    }
+    .progress {
+      position: fixed; bottom: 0; left: 0; height: 3px; z-index: 10;
+      background: var(--accent, #f5f2eb);
+      transition: width 0.35s ease;
+    }
+
+    .slide[data-theme="a"] { --accent: #f5f2eb; }
+    .slide[data-theme="b"] { --accent: #c8c4bc; }
+    .slide[data-theme="c"] { --accent: #e8e4dc; }
+    .slide[data-theme="d"] { --accent: #d4d0c8; }
+
+    .art-credit {
+      position: fixed; bottom: 1.25rem; left: 1.5rem; z-index: 10;
+      font-family: "IBM Plex Mono", monospace; font-size: 0.6rem;
+      color: rgba(255,255,255,0.28); max-width: 22rem; line-height: 1.4;
+    }
+    .art-credit a { color: inherit; }
+  </style>
+</head>
+<body>
+  <div class="deck" id="deck">
+
+    <!-- 1 · Title -->
+    <section class="slide active" data-theme="a" data-seed="833">
+      <canvas class="bg"></canvas>
+      <div class="content title-content">
+        <p class="kicker">Gemini Hackathon · Tokyo</p>
+        <h1>Mimi <span class="jp">耳</span></h1>
+        <p class="subtitle">Learn Japanese from real conversations: live translation now, plus a study coach that turns the audio into flashcards for later.</p>
+        <div class="pill-row">
+          <span class="pill">EXPO MOBILE</span>
+          <span class="pill">GEMINI LIVE</span>
+          <span class="pill">STUDY COACH</span>
+        </div>
+      </div>
+      <div class="title-mockup" aria-hidden="true">
+        <div class="phone-screen">
+          <div class="phone-top">
+            <span>14:12</span>
+            <span>5G · 88%</span>
+          </div>
+          <div class="phone-header">
+            <div class="phone-header-row">
+              <div>
+                <div class="phone-title">Mimi 耳</div>
+                <div class="phone-tagline">Hear Japanese. Get English guidance.</div>
+              </div>
+              <div class="phone-mode">EN</div>
+            </div>
+          </div>
+          <div class="phone-body">
+            <div class="phone-status">
+              <span class="phone-dot"></span>
+              <span>Listening: Gemini Live translates now. The study coach cleans up the deck after.</span>
+            </div>
+            <div class="phone-card">
+              <div class="phone-jp"><span>惜しい</span>！あと少しでした。</div>
+              <div class="phone-en">So close! That was almost it.</div>
+              <div class="phone-flashcard">Coach card: 惜しい · why it mattered · review later</div>
+            </div>
+          </div>
+          <div class="phone-button">Start listening</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 · Stakes -->
+    <section class="slide" data-theme="b" data-seed="611">
+      <canvas class="bg"></canvas>
+      <div class="content stakes-layout">
+        <div>
+          <p class="kicker">The stakes</p>
+          <h2>You have to improve your Japanese</h2>
+          <ul class="bullets">
+            <li>Or you <strong>lose job prospects</strong></li>
+            <li>You <strong>miss real connections</strong> with people around you</li>
+            <li>You might eventually have to <strong>go home</strong></li>
+          </ul>
+          <p class="stakes-note">The pressure is real. The learning has to fit real life.</p>
+        </div>
+        <img class="stakes-image" src="assets/japanese-stakes.png" alt="" />
+      </div>
+    </section>
+
+    <!-- 3 · Problem -->
+    <section class="slide" data-theme="b" data-seed="137">
+      <canvas class="bg"></canvas>
+      <div class="content stakes-layout">
+        <div>
+          <p class="kicker">Problem</p>
+          <h2>Translation tools help you understand, not remember</h2>
+          <ul class="bullets">
+            <li>The best vocab is <strong>personal</strong>: from your calls, dinners, live moments</li>
+            <li>Import tools (LingQ, Migaku) need content you <strong>prepared ahead of time</strong></li>
+            <li>Tutor call, friends speaking JP, real world: <strong>no transcript, nothing sticks</strong></li>
+          </ul>
+        </div>
+        <img class="stakes-image" src="assets/connections.png" alt="" />
+      </div>
+    </section>
+
+    <!-- 4 · Solution + demo -->
+    <section class="slide" data-theme="c" data-seed="314">
+      <canvas class="bg"></canvas>
+      <div class="content stakes-layout">
+        <div>
+          <p class="kicker">Solution</p>
+          <h2>Machine intelligence for live audio</h2>
+          <ul class="bullets">
+            <li>Phone mic → Gemini Live → <strong>bilingual subtitles</strong> in real time</li>
+            <li>A study coach reviews the <strong>original audio</strong> after the conversation</li>
+            <li>It cleans up the deck using mistakes, hesitation, and words you already know</li>
+          </ul>
+        </div>
+        <img class="stakes-image" src="assets/audio-waveform.png" alt="" />
+      </div>
+    </section>
+
+    <!-- 5 · Roadmap -->
+    <section class="slide" data-theme="d" data-seed="2024">
+      <canvas class="bg"></canvas>
+      <div class="content stakes-layout">
+        <div>
+          <p class="kicker">Roadmap</p>
+          <h2>From live help to an agentic study pipeline</h2>
+          <ul class="bullets">
+            <li><strong>Today</strong>: listen, translate, tap words, capture flashcards</li>
+            <li><strong>Next</strong>: post-session coach analyzes audio and fixes the deck</li>
+            <li><strong>Later</strong>: dictionary, web, and Anki tools loop until the study plan is right</li>
+          </ul>
+        </div>
+        <img class="stakes-image" src="assets/study-desk.png" alt="" />
+      </div>
+    </section>
+
+  </div>
+
+  <div class="progress" id="progress"></div>
+  <p class="nav-hint">← → or tap · <span id="slideNum">1</span> / 5</p>
+  <p class="art-credit">Contour backgrounds inspired by <a href="https://www.fxhash.xyz/project/ralexi">Ralexi</a> · procedural, original code</p>
+
+  <script>
+    // Monochrome contour / flow-field art (Ralexi-inspired, original)
+    function hash(n) {
+      n = Math.sin(n) * 43758.5453;
+      return n - Math.floor(n);
+    }
+
+    function rnd(seed, i) {
+      return hash(seed * 7919 + i * 0.618);
+    }
+
+    function field(x, y, seed, t) {
+      const s = seed * 0.001;
+      const drift = t * 0.00004;
+      const a =
+        Math.sin(x * 0.004 + s + drift) * Math.cos(y * 0.0035 - s * 1.3) +
+        Math.sin(x * 0.009 - y * 0.008 + s * 2.1) * 0.55 +
+        Math.sin((x + y) * 0.0025 + s * 0.7 - drift * 2) * 0.35 +
+        Math.cos(x * 0.015 + y * 0.012 - s) * 0.2;
+      const b =
+        Math.cos(y * 0.005 + s * 1.7 + drift) * Math.sin(x * 0.004 - s) +
+        Math.sin(x * 0.011 + y * 0.009 + s) * 0.45;
+      return Math.atan2(a, b);
+    }
+
+    function height(x, y, seed, t) {
+      const s = seed * 0.002;
+      const drift = t * 0.00003;
+      return (
+        Math.sin(x * 0.003 + s + drift) +
+        Math.sin(y * 0.004 - s * 1.2) * 0.8 +
+        Math.sin((x * 0.002 + y * 0.0025) + s * 0.5) * 0.6 +
+        Math.cos(x * 0.007 - y * 0.006 + s * 2) * 0.35
+      );
+    }
+
+    function drawStreamlines(ctx, W, H, seed, t, opts) {
+      const { count, steps, stepLen, alpha, width, offsetX, offsetY } = opts;
+      ctx.lineWidth = width;
+      ctx.strokeStyle = `rgba(245, 242, 235, ${alpha})`;
+      ctx.lineCap = "round";
+      ctx.lineJoin = "round";
+
+      for (let i = 0; i < count; i++) {
+        let x = offsetX + rnd(seed, i) * W;
+        let y = offsetY + rnd(seed, i + 1000) * H;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        for (let s = 0; s < steps; s++) {
+          const a = field(x, y, seed + i * 0.01, t);
+          x += Math.cos(a) * stepLen;
+          y += Math.sin(a) * stepLen;
+          if (x < 0 || x > W || y < 0 || y > H) break;
+          ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+    }
+
+    function drawContours(ctx, W, H, seed, t, opts) {
+      const { cols, rows, levels, alpha, width } = opts;
+      const cellW = W / cols;
+      const cellH = H / rows;
+      ctx.lineWidth = width;
+      ctx.strokeStyle = `rgba(245, 242, 235, ${alpha})`;
+
+      for (let lv = 0; lv < levels; lv++) {
+        const threshold = -2.2 + (lv / levels) * 4.4;
+        for (let gy = 0; gy < rows - 1; gy++) {
+          for (let gx = 0; gx < cols - 1; gx++) {
+            const x0 = gx * cellW;
+            const y0 = gy * cellH;
+            const x1 = x0 + cellW;
+            const y1 = y0 + cellH;
+            const h00 = height(x0, y0, seed, t);
+            const h10 = height(x1, y0, seed, t);
+            const h01 = height(x0, y1, seed, t);
+            const h11 = height(x1, y1, seed, t);
+
+            const lerpX = (y, ha, hb) => x0 + ((threshold - ha) / (hb - ha)) * cellW;
+            const lerpY = (x, ha, hb) => y0 + ((threshold - ha) / (hb - ha)) * cellH;
+
+            ctx.beginPath();
+            if ((h00 > threshold) !== (h10 > threshold)) {
+              ctx.moveTo(lerpX(y0, h00, h10), y0);
+              ctx.lineTo(lerpX(y1, h01, h11), y1);
+            }
+            if ((h00 > threshold) !== (h01 > threshold)) {
+              ctx.moveTo(x0, lerpY(x0, h00, h01));
+              ctx.lineTo(x1, lerpY(x1, h10, h11));
+            }
+            ctx.stroke();
+          }
+        }
+      }
+    }
+
+    function paint(canvas, seed, t = 0) {
+      const ctx = canvas.getContext("2d");
+      const dpr = devicePixelRatio;
+      const W = window.innerWidth;
+      const H = window.innerHeight;
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      // Paper-dark base (Ralexi is B&W; we invert for slide legibility)
+      ctx.fillStyle = "#0a0a0a";
+      ctx.fillRect(0, 0, W, H);
+
+      const artX = W * 0.28;
+      const artW = W * 0.72;
+      const artH = H;
+
+      ctx.save();
+      ctx.translate(artX, 0);
+      ctx.beginPath();
+      ctx.rect(0, 0, artW, artH);
+      ctx.clip();
+
+      // Fine dense streamlines (main texture)
+      drawStreamlines(ctx, artW, artH, seed, t, {
+        count: 90 + Math.floor(rnd(seed, 1) * 30),
+        steps: 140,
+        stepLen: 2.2,
+        alpha: 0.22,
+        width: 0.55,
+        offsetX: 0,
+        offsetY: 0,
+      });
+
+      // Secondary layer: thicker, sparser
+      drawStreamlines(ctx, artW, artH, seed + 17, t, {
+        count: 35 + Math.floor(rnd(seed, 2) * 15),
+        steps: 90,
+        stepLen: 3.5,
+        alpha: 0.14,
+        width: 0.9,
+        offsetX: rnd(seed, 3) * 40,
+        offsetY: rnd(seed, 4) * 40,
+      });
+
+      // Contour iso-lines (topographic feel)
+      drawContours(ctx, artW, artH, seed + 42, t, {
+        cols: Math.floor(artW / 18),
+        rows: Math.floor(artH / 18),
+        levels: 10,
+        alpha: 0.08,
+        width: 0.4,
+      });
+
+      // Bold whorls: fewer long traces
+      drawStreamlines(ctx, artW, artH, seed + 99, t, {
+        count: 12 + Math.floor(rnd(seed, 5) * 8),
+        steps: 220,
+        stepLen: 2.8,
+        alpha: 0.32,
+        width: 1.1,
+        offsetX: 0,
+        offsetY: 0,
+      });
+
+      ctx.restore();
+
+      // Soft paper lift on art side
+      const lift = ctx.createLinearGradient(artX, 0, W, 0);
+      lift.addColorStop(0, "rgba(245,242,235,0.03)");
+      lift.addColorStop(0.4, "rgba(245,242,235,0.06)");
+      lift.addColorStop(1, "rgba(245,242,235,0.02)");
+      ctx.fillStyle = lift;
+      ctx.fillRect(artX, 0, artW, H);
+    }
+
+    const slides = [...document.querySelectorAll(".slide")];
+    let idx = 0;
+    let animT = 0;
+    let animId = null;
+
+    function renderAll() {
+      slides.forEach((s) => {
+        paint(s.querySelector(".bg"), +s.dataset.seed, animT);
+      });
+    }
+
+    function tick() {
+      animT += 16;
+      paint(slides[idx].querySelector(".bg"), +slides[idx].dataset.seed, animT);
+      animId = requestAnimationFrame(tick);
+    }
+
+    function startAnim() {
+      if (!animId) animId = requestAnimationFrame(tick);
+    }
+
+    function stopAnim() {
+      if (animId) { cancelAnimationFrame(animId); animId = null; }
+    }
+
+    function go(n) {
+      slides[idx].classList.remove("active");
+      idx = (n + slides.length) % slides.length;
+      slides[idx].classList.add("active");
+      document.getElementById("progress").style.width = ((idx + 1) / slides.length * 100) + "%";
+      document.getElementById("slideNum").textContent = idx + 1;
+      paint(slides[idx].querySelector(".bg"), +slides[idx].dataset.seed, animT);
+    }
+
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "ArrowRight" || e.key === " ") { e.preventDefault(); go(idx + 1); }
+      if (e.key === "ArrowLeft") go(idx - 1);
+    });
+    window.addEventListener("resize", renderAll);
+    document.addEventListener("visibilitychange", () => {
+      document.hidden ? stopAnim() : startAnim();
+    });
+    document.getElementById("deck").addEventListener("click", (e) => {
+      if (e.clientX > window.innerWidth / 2) go(idx + 1); else go(idx - 1);
+    });
+
+    renderAll();
+    startAnim();
+  </script>
+</body>
+</html>
