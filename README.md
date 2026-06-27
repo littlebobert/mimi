@@ -1,8 +1,8 @@
 # Mimi (耳)
 
-**Mine Japanese flashcards from live audio — no subtitles needed.**
+**Learn Japanese from live audio — no subtitles needed.**
 
-> Have you heard of Migaku? This is like that, but **live** — any audio, even with no subtitles. Livestreams, radio, a World Cup match with no captions — anything. It listens, shows Japanese and English in real time, and you tap any word to study it later.
+> Live translation helps you understand — but it doesn't help you **learn**. Mimi is live translation that turns what you hear into flashcards from your own life — the Netflix show you're watching, a call with your tutor, a live event, anything. Tap any word to study it later.
 
 Gemini AI Hackathon · Tokyo · Jun 28, 2026 · [AI Builders × Google Japan](https://aibuilders.jp)
 
@@ -10,9 +10,11 @@ Gemini AI Hackathon · Tokyo · Jun 28, 2026 · [AI Builders × Google Japan](ht
 
 ## The wedge (read this first)
 
-Subtitle-mining tools (Migaku, Language Reactor, asbplayer) need a **text track** — captions, selectable page text, or an AI-generated transcript pipeline. They cannot touch **raw live audio** with no captions.
+**Live translation tools are great — but they're not learning tools.**
 
-**Mimi listens.** We stream tab audio into Gemini's live speech-to-speech translation API and show Japanese + English together — **painted on top of the video** like Migaku. Tap any word for an instant dictionary lookup; optionally ask Gemini to explain it in context.
+Google Translate, Meet captions, live subtitle overlays — you hear the English, but nothing sticks. Vocabulary from *your* life (the show you're watching, a conversation you had) beats any textbook — but only if you can capture and study it.
+
+**Mimi listens.** We stream tab audio into Gemini's live speech-to-speech translation API, show Japanese + English **painted on top of the video**, and let you tap any word for an instant definition. Flashcards from live audio — no subtitle file required.
 
 That's the demo. That's the pitch.
 
@@ -228,7 +230,7 @@ Protect the last 30–60 minutes for pitch rehearsal, not new features.
 
 - **Full-stack / extension dev** — MV3, offscreen doc, `tabCapture` (Person A)
 - **Frontend dev** — content script overlay, kuromoji, popup UI (Person B)
-- **Designer** — overlay on video (readable on any background, Migaku-adjacent feel)
+- **Designer** — overlay on video (readable on any background, dual-language subtitle feel)
 - **Native Japanese speaker** — translation QA, tokenization edge cases, demo content
 
 ---
@@ -294,27 +296,71 @@ TOKEN_ENDPOINT=https://… # extension + web app fetch ephemeral tokens from her
 - [Gemini Live API — ephemeral tokens](https://ai.google.dev/gemini-api/docs/live)
 - [chrome.tabCapture](https://developer.chrome.com/docs/extensions/reference/api/tabCapture)
 - [Offscreen documents (MV3)](https://developer.chrome.com/docs/extensions/reference/api/offscreen)
-- Migaku / Language Reactor — UX reference for overlay placement
+- Language-learning subtitle overlays — UX reference for overlay placement
 
 ---
 
+## Recruiting pitch (interactive, ~15 sec)
+
+**Opener:** Quick question — have you ever made your own flashcards to learn a language?
+
+**If YES:**
+> Same thing — but from **any live audio** — the Netflix show you're watching, a call with your tutor, a live event, anything. Tap a word, get the definition, save it. Gemini hackathon today. Need a **designer** and a **native JP speaker** — interested?
+
+**If NO:**
+> The idea's simple: people learn better when vocabulary comes from **their own life** — the Netflix show you're watching, a call with your tutor, a live event, anything. We're building flashcards from live audio. Chrome extension, hackathon today. Need a **designer** and someone who can **catch bad Japanese**. Team up?
+
+---
+
+## Slide deck (6 slides)
+
+**Slide 1 — Title**
+- Mimi (耳) — Learn Japanese from live audio
+- Chrome extension: live translation + clickable subtitles
+- Tap any word → instant definition
+
+**Slide 1.5 — Thesis**
+- The best vocabulary is personal
+- Save words from shows, streams, and conversations you care about
+- Learn faster when every card comes from something you watched or lived
+
+**Slide 2 — Problem**
+- Live translation tools aren't learning tools
+- You understand in the moment — but nothing sticks
+- Netflix show you're watching, a call with your tutor, a live event — no way to capture and study what you hear
+
+**Slide 3 — Solution**
+- Mimi listens to live audio → bilingual subtitles on the video
+- Tap any word for an instant definition
+- Flashcards from your own life, not a textbook
+
+**Slide 4 — Demo**
+- Browser call with teammate *(backup: YouTube livestream)*
+- Subtitles appear in real time
+- Click a word → definition popup
+
+**Slide 5 — Roadmap**
+- **Today:** Chrome extension + web app on Cloud Run
+- **Next:** macOS / mobile app for any audio around you
+- **Later:** Study agent auto-builds a deck matched to your level
+
 ## Demo pitch script (~2 min)
 
-Quick show of hands — has anyone used Migaku, or made flashcards from stuff you actually watch?
+Quick show of hands — has anyone made flashcards from stuff they actually watch or listen to?
 
 *[pause]*
 
-It's simple: you learn faster when vocabulary comes from your life: the show you're watching for example — not a textbook.
+It's simple: you learn faster when vocabulary comes from your life — the show you're watching, not a textbook.
 
-The problem: those tools need subtitles on a supported site. A World Cup livestream with no captions? Nothing to click. Your Zoom lesson with your tutor? Migaku doesn't support that.
+The problem: live translation tools help you understand, but they're not **learning** tools. The Netflix show you're watching, a call with your tutor, a live event — you hear it once and forget it. Nothing to study later.
 
-This app, called Mimi, Japanese for ear, listens to live audio instead. It's a Chrome extension. Open any tab with Japanese audio, click Mimi, and Gemini translates in real time. Japanese and English subtitles appear right on the video.
+This app, called Mimi — Japanese for ear — listens to live audio instead. It's a Chrome extension. Open any tab with Japanese audio, click Mimi, and Gemini translates in real time. Japanese and English subtitles appear right on the video.
 
 *[demo: rehearsed browser call with teammate; backup rehearsed YouTube video if that fails]*
 
-And this is what subtitle tools can't do on live audio — tap any word. Instant definition. *[click, popup]*
+And this is what translation alone can't do — **tap any word**. Instant definition. *[click, popup]* Save it for your deck.
 
-Migaku for live audio — streams, calls, even live conversations on a future mobile app. Anything Migaku can't reach. Web app on Cloud Run too — link in the submission.
+Live translation that actually helps you learn. Web app on Cloud Run too — link in the submission.
 
 ### Stage notes
 
@@ -342,10 +388,7 @@ Submit the **Cloud Run web app URL**. Demo the **extension** on stage. They're t
 Fall back to web app tab-share, or a different site we tested (YouTube is the default target). Have the fallback ladder rehearsed.
 
 **Isn't this just live captions?**
-No — captions stop at understanding. Every word is tappable, definable, mineable.
-
-**Can we say "Migaku"?**
-Yes — comparative reference is fine. Don't use their logo or imply partnership.
+No — captions and translation help you understand. Mimi turns every word into something you can tap, define, and save for later.
 
 **Why "Mimi" (耳)?**
 Ear — 耳から覚える ("learn by ear"). Short, memorable.
@@ -360,4 +403,4 @@ DM **[your handle]** or find us at team formation after the workshop.
 
 ---
 
-*Last updated: Jun 26, 2026 — extension-primary, web-app-fallback strategy.*
+*Last updated: Jun 26, 2026 — extension-primary, web-app-fallback strategy. No third-party product comparisons.*
