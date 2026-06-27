@@ -277,7 +277,10 @@ export function useMimiSession({ targetLanguageCode, copy }: MimiSessionOptions)
     setListening(false);
     setStatus(copy.stopped);
     setCanAnalyze(audioChunksRef.current.length > 0);
-  }, [copy.stopped]);
+    if (audioChunksRef.current.length > 0) {
+      void analyzeSession();
+    }
+  }, [analyzeSession, copy.stopped]);
 
   const lookupWord = useCallback((word: string) => {
     const cleaned = cleanCapturedWord(word);

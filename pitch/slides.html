@@ -240,12 +240,39 @@
         height: 9in;
         opacity: 1;
         pointer-events: auto;
+        overflow: hidden;
         page-break-after: always;
         break-after: page;
       }
       .slide:last-child { page-break-after: auto; break-after: auto; }
       canvas.bg { width: 16in; height: 9in; }
-      .title-mockup { display: block; }
+      .title-mockup {
+        display: block;
+        width: 2.45in;
+        right: 1.55in;
+        top: 1.65in;
+        transform: rotate(1.5deg);
+        break-inside: avoid;
+        page-break-inside: avoid;
+      }
+      .phone-screen {
+        min-height: 0;
+        height: 4.9in;
+        font-size: 0.55rem;
+        border-radius: 1.15rem;
+      }
+      .phone-top { padding: 0.45rem 0.7rem 0.25rem; font-size: 0.48rem; }
+      .phone-header { padding: 0.45rem 0.7rem 0.55rem; }
+      .phone-title { font-size: 0.9rem; }
+      .phone-tagline { font-size: 0.48rem; }
+      .phone-mode { font-size: 0.44rem; padding: 0.2rem 0.38rem; }
+      .phone-body { padding: 0.7rem; }
+      .phone-status { padding: 0.55rem; border-radius: 0.7rem; }
+      .phone-card { min-height: 1.75in; margin-top: 0.6rem; padding: 0.7rem; }
+      .phone-jp { font-size: 0.8rem; }
+      .phone-en { font-size: 0.52rem; }
+      .phone-flashcard { margin-top: 0.5rem; padding: 0.42rem 0.5rem; font-size: 0.44rem; }
+      .phone-button { margin: 0.65rem; margin-top: 0.15rem; padding: 0.6rem; font-size: 0.55rem; }
       .stakes-layout { grid-template-columns: minmax(0, 1fr) minmax(14rem, 24rem); }
       .stakes-image { display: block; }
       .nav-hint, .progress { display: none; }

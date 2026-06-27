@@ -277,7 +277,7 @@ export default function App() {
               highlightedWords={capturedWords}
               tapHint={copy.tapHint}
             />
-            {canAnalyze && !listening ? (
+            {canAnalyze && !listening && !analyzing && !analysis ? (
               <Pressable
                 style={[styles.analysisButton, analyzing && styles.buttonDisabled]}
                 onPress={analyzeSession}
